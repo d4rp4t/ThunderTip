@@ -2,6 +2,7 @@ import { webln } from "@getalby/sdk";
 import {MyContext, MyConversation} from "../types/types";
 import User from '../utils/User'
 import supabase from "../config/supabaseConfig";
+
 export async function handleConnect(ctx: MyContext, conversation: MyConversation) {
     const user = await User.init(ctx.message?.from.id.toString()!);
     if (user.isNew) {
@@ -10,6 +11,7 @@ export async function handleConnect(ctx: MyContext, conversation: MyConversation
                 force_reply: true, input_field_placeholder: 'Reply with your NWC connect URI',
             },
         });
+
         const { message } = await conversation.wait();
         if (message && message.text) {
             try {

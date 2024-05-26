@@ -6,6 +6,7 @@ import bot from './config/botConfig'
 import * as dotenv from "dotenv";
 import { session } from "grammy";
 
+
 dotenv.config();
 bot.use(session({ initial: () => ({}) }));
 bot.use(conversations());
@@ -17,4 +18,7 @@ bot.command('connection', handleConnection);
 bot.command('tip', handleTip);
 bot.command('balance', handleBalance);
 
+bot.catch(async (err) => {
+    const message = await bot.api.sendMessage(parseInt(process.env.OWNER_ID!), err.message);
+});
 bot.start();
