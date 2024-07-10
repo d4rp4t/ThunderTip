@@ -49,7 +49,7 @@ export default class User {
         const { data, error } = await supabase
             .from('users')
             .select("telegram_user_id")
-            .eq('username', username);
+            .eq('username', username.toLowerCase());
         if (error) {
             throw new DatabaseConnectionError("");
         }
@@ -104,13 +104,13 @@ export default class User {
     async updateUsername(newUsername: string) {
         const { data, error } = await supabase
             .from('users')
-            .update({ username: newUsername })
+            .update({ username: newUsername.toLowerCase() })
             .eq('telegram_user_id', this.userID)
             .select();
         if (error) {
             throw new DatabaseConnectionError("");
         }
-        this.username = newUsername;
+        this.username = newUsername.toLowerCase();
     }
 
     private encryptNwcUri(text: string) {
