@@ -1,10 +1,9 @@
 import { Bot } from "grammy";
-import {MyContext} from "../types/types";
-import * as dotenv from "dotenv";
-dotenv.config();
-const BOT_TOKEN = process.env.BOT_TOKEN;
-
-(!BOT_TOKEN)&&(()=> {throw new Error("Can't initialize bot - token not provided");})()
+import {MyContext} from "../types";
+import {BOT_TOKEN} from "../constants";
 
 const bot = new Bot<MyContext>(BOT_TOKEN);
+if (!bot){
+    throw new Error("Couldn't create bot object! Panicking.")
+}
 export default bot;

@@ -2,15 +2,10 @@ import { webln } from "@getalby/sdk";
 import { RequestInvoiceArgs } from "@webbtc/webln-types";
 import * as crypto from 'node:crypto';
 import supabase from '../config/supabaseConfig'
-
-const PASSWORD = process.env.PASSWORD;
-
-if (!PASSWORD) {
-    throw new Error("No password variable provided");
-}
+import {PASSWORD} from "../constants";
+import {DatabaseConnectionError, EncryptionError, ReceiverConnectionError, ReceiverNotConnectedError} from "../errors";
 
 export default class User {
-
     public isNew: boolean;
     public connection?: webln.NostrWebLNProvider;
     public userID: string;
@@ -22,7 +17,7 @@ export default class User {
         this.username = username;
         if (!isNew && nwcUrl) {
             try {
-                let decryptedNwcUrl = this.decrypt(nwcUrl);
+                let decryptedNwcUrl = this.decryptNwcUri(nwcUrl);
                 this.connection = new webln.NWC({ nostrWalletConnectUrl: decryptedNwcUrl });
             } catch (error: any) {
                 console.error(error.message);
@@ -36,7 +31,7 @@ export default class User {
             .select('nwc_connect_link, username')
             .eq('telegram_user_id', userID);
         if (error) {
-            console.error(`Failed to fetch user data: ${error.message}`);
+            throw new DatabaseConnectionError("");
         }
 
         if (data && data.length > 0) {
@@ -56,35 +51,35 @@ export default class User {
             .select("telegram_user_id")
             .eq('username', username);
         if (error) {
-            throw new Error(`Failed to fetch user ID: ${error.message}`);
+            throw new DatabaseConnectionError("");
         }
         if (data && data.length > 0) {
             return data[0].telegram_user_id;
         }
-        throw new Error("User not found!");
+        throw new ReceiverNotConnectedError("");
     }
 
     async addNwcUrl(nwcUrl: string) {
-        const encryptedNwcUrl = this.encrypt(nwcUrl);
+        const encryptedNwcUrl = this.encryptNwcUri(nwcUrl);
         const { data, error } = await supabase
             .from('users')
             .insert([{ telegram_user_id: this.userID, nwc_connect_link: encryptedNwcUrl }])
             .select();
         if (error) {
-            throw new Error(`Error adding NWC URL: ${error.message}`);
+            throw new DatabaseConnectionError("");
         }
         return { data, error };
     }
 
     async updateNwcUrl(nwcUrl: string) {
-        const encryptedNwcUrl = this.encrypt(nwcUrl);
+        const encryptedNwcUrl = this.encryptNwcUri(nwcUrl);
         const { data, error } = await supabase
             .from('users')
             .update({ nwc_connect_link: encryptedNwcUrl })
             .eq("telegram_user_id", this.userID)
             .select();
         if (error) {
-            throw new Error(`Error updating NWC URL: ${error.message}`);
+            throw new DatabaseConnectionError("");
         }
         return { data, error };
     }
@@ -113,12 +108,12 @@ export default class User {
             .eq('telegram_user_id', this.userID)
             .select();
         if (error) {
-            throw new Error(`Error updating username: ${error.message}`);
+            throw new DatabaseConnectionError("");
         }
         this.username = newUsername;
     }
 
-    private encrypt(text: string) {
+    private encryptNwcUri(text: string) {
         const key = crypto.createHash('sha256').update(PASSWORD + this.userID).digest();
         const iv = crypto.randomBytes(16);
         const cipher = crypto.createCipheriv('aes-256-ctr', key, iv);
@@ -127,15 +122,13 @@ export default class User {
         return iv.toString('base64') + ':' + encrypted.toString('base64');
     }
 
-    private decrypt(text: string): string {
+    private decryptNwcUri(text: string): string {
         const key = crypto.createHash('sha256').update(PASSWORD + this.userID).digest();
         const textParts = text.split(':');
         const ivString = textParts.shift();
-
         if (!ivString) {
-            throw new Error("Initialization vector (IV) is missing or invalid");
+            throw new EncryptionError("No initialization vector found!")
         }
-
         const iv = Buffer.from(ivString!, 'base64');
         const encryptedText = Buffer.from(textParts.join(':'), 'base64');
         const decipher = crypto.createDecipheriv('aes-256-ctr', key, iv);

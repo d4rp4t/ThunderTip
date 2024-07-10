@@ -1,23 +1,25 @@
-import User from './User';
+import User from '../classes/User';
 import {Context} from "grammy";
-import {ThunderError} from "./ThunderError";
+import {
+    CommandSyntaxError,
+    InsufficientFundsError, ReceiverConnectionError,
+    ReceiverNotConnectedError,
+    SelfTipError, SenderConnectionError,
+    SenderNotConnectedError
+} from "../errors";
+
 
 export async function handleTransaction(receiverID: string, senderID: string, amount: number, ctx: Context) {
     const receiver = await User.init(receiverID);
     const sender = await User.init(senderID);
+    const tipAmount = amount;
 
-     (receiverID === senderID) && (() => {
-         throw new ThunderError("Why would you tip yourself?");
-     })();
-
-    sender.isNew && (()=> {
-        throw new ThunderError("Sender isn't connected to the bot, so the transaction can't be processed. \nTip wasn't sent.");
-    })();
-
-    (receiver.isNew) && (()=>{
-        throw new ThunderError("Receiver isn't connected to the bot, so the transaction can't be processed. \nTip wasn't sent.");
-    })()
-
+    (receiverID==senderID)&&(()=>{throw new SelfTipError("");})();
+    (sender.isNew)&&(()=>{throw new SenderNotConnectedError("");})();
+    (receiver.isNew)&&(()=>{throw new ReceiverNotConnectedError("")})();
+    (!sender.connection)&&(()=>{throw new SenderConnectionError("");})();
+    (!receiver.connection)&&(()=>{throw new ReceiverConnectionError("");})();
+    (isNaN(tipAmount))&&(()=>{throw new CommandSyntaxError("")})();
 
     if (!sender.username || sender.username !== ("@" + ctx.message?.from.username)) {
         if (ctx.message) {
@@ -25,17 +27,9 @@ export async function handleTransaction(receiverID: string, senderID: string, am
         }
     }
 
-    const tipAmount = amount;
-
-    (isNaN(tipAmount)) && (() => { throw new ThunderError('Syntax error. If this is a reply to someone\'s message, use /tip >amount<, e.g., /tip 10'); })();
-    (!sender.connection) && (() => { throw new ThunderError("Sender's NWC connection error!"); })();
-    (!receiver.connection) && (() => { throw new ThunderError("Receiver's NWC connection error!"); })();
-
-
-    await sender.connection!.enable();
-    const senderBalance = await sender.connection!.getBalance();
-
-   (tipAmount > senderBalance.balance) && (()=>{throw new ThunderError("Insufficient funds in sender's account!");})()
+    await sender.connection.enable();
+    const senderBalance = await sender.connection.getBalance();
+    (tipAmount>senderBalance.balance)&&(()=>{throw new InsufficientFundsError("")})();
 
     const invoice = await receiver.createInvoice(tipAmount, `Tip for ${receiver.username} from ${sender.username}`);
     if (invoice !== undefined) {

@@ -1,12 +1,8 @@
 import {createClient} from "@supabase/supabase-js";
+import {SUPABASE_KEY, SUPABASE_URL} from "../constants";
 
-import * as dotenv from "dotenv";
-dotenv.config();
-const SUPABASE_URL = process.env.SUPABASE_URL;
-const SUPABASE_KEY = process.env.SUPABASE_KEY;
-
-(!SUPABASE_KEY || !SUPABASE_URL) && (()=>{throw new Error("Supabase not connected!");})()
-
-const supabase = createClient(SUPABASE_URL!, SUPABASE_KEY!);
-
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+if(!supabase){
+    throw new Error("Couldn't estabilish connection with database. Panicking.")
+}
 export default supabase;

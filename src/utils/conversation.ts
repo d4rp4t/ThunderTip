@@ -1,6 +1,8 @@
 import { handleConnect, handleUpdate, handleDelete } from '../handlers/conversationHandlers';
-import {MyContext, MyConversation} from "../types/types";
+import {MyContext, MyConversation} from "../types";
 import {InlineKeyboard} from "grammy";
+import {ConnectionRequestInGroupChatError} from "../errors";
+
 export async function connection(conversation: MyConversation, ctx: MyContext) {
     const connectionKeyboard = new InlineKeyboard()
         .text("Create new Connection", "connect").row()
@@ -30,6 +32,7 @@ export async function connection(conversation: MyConversation, ctx: MyContext) {
         }
         await callback.answerCallbackQuery();
     } else {
-        await ctx.reply("For connection settings, please DM this bot. The NWC URI is sensitive data.");
+        throw new ConnectionRequestInGroupChatError("");
     }
 }
+

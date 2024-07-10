@@ -1,7 +1,8 @@
 import { webln } from "@getalby/sdk";
-import {MyContext, MyConversation} from "../types/types";
-import User from '../utils/User'
+import {MyContext, MyConversation} from "../types";
+import User from '../classes/User'
 import supabase from "../config/supabaseConfig";
+import {handleError} from "../errors";
 
 export async function handleConnect(ctx: MyContext, conversation: MyConversation) {
     const user = await User.init(ctx.message?.from.id.toString()!);
@@ -19,7 +20,7 @@ export async function handleConnect(ctx: MyContext, conversation: MyConversation
                 await user.addNwcUrl(message.text);
                 await ctx.reply("Wallet connected successfully!");
             } catch (err:any) {
-                await ctx.reply("Invalid URL sent! Please check and try again.");
+                await handleError(err, ctx)
             }
         }
         if (message && message.from) {
@@ -32,7 +33,7 @@ export async function handleConnect(ctx: MyContext, conversation: MyConversation
 
 export async function handleUpdate(ctx: MyContext, conversation: MyConversation) {
     const user = await User.init(ctx.message!.from.id.toString());
-    if (user.connection !== undefined) {
+    if (user.connection) {
         await ctx.reply("Please provide your new NWC URL.");
         const { message } = await conversation.wait();
 
@@ -61,7 +62,7 @@ export async function handleDelete(ctx: MyContext, conversation: MyConversation)
         if (!error) {
             await ctx.reply("Deleted. I hope to see you back!");
         } else {
-            await ctx.reply("Deletion error! Please try again later.");
+            await ctx.reply("Error occurred! Please try again later.");
         }
     } else {
         await ctx.reply("Deletion aborted. What a relief!");
