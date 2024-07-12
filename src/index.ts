@@ -11,8 +11,8 @@ import {
 import { connection } from './utils/conversation';
 import bot from './config/botConfig'
 import { session } from "grammy";
-import {OWNER_ID} from "./constants"
-
+import {OWNER_ID, PORT} from "./constants";
+console.log(PORT);
 bot.use(session({ initial: () => ({}) }));
 bot.use(conversations());
 bot.use(createConversation(connection));
