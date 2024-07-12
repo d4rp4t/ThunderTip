@@ -3,7 +3,7 @@ import { RequestInvoiceArgs } from "@webbtc/webln-types";
 import * as crypto from 'node:crypto';
 import supabase from '../config/supabaseConfig'
 import {PASSWORD} from "../constants";
-import {DatabaseConnectionError, EncryptionError, ReceiverConnectionError, ReceiverNotConnectedError} from "../errors";
+import {DatabaseConnectionError, EncryptionError, ReceiverNotConnectedError} from "../errors";
 
 export default class User {
     public isNew: boolean;
@@ -102,7 +102,7 @@ export default class User {
     }
 
     async updateUsername(newUsername: string) {
-        const { data, error } = await supabase
+        const {error } = await supabase
             .from('users')
             .update({ username: newUsername.toLowerCase() })
             .eq('telegram_user_id', this.userID)

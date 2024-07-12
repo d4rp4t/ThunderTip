@@ -61,11 +61,6 @@ class ConnectionRequestInGroupChatError extends Error{
         super(message);
     }
 }
-class UsernameUpdateError extends Error{
-    constructor(message: string) {
-        super(message);
-    }
-}
 class DatabaseConnectionError extends Error{
     constructor(message: string) {
         super(message);

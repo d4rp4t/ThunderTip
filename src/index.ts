@@ -1,6 +1,13 @@
 Object.assign(global, { WebSocket: require('ws') });
 import { conversations, createConversation } from "@grammyjs/conversations";
-import { handleStart, handleHelp, handleConnection, handleTip, handleBalance } from './handlers/commandHandlers';
+import {
+    handleStart,
+    handleHelp,
+    handleConnection,
+    handleTip,
+    handleBalance,
+    handleNwcInfo
+} from './handlers/commandHandlers';
 import { connection } from './utils/conversation';
 import bot from './config/botConfig'
 import { session } from "grammy";
@@ -15,6 +22,7 @@ bot.command('help', handleHelp);
 bot.command('connection', handleConnection);
 bot.command('tip', handleTip);
 bot.command('balance', handleBalance);
+bot.command('nwc', handleNwcInfo);
 
 bot.catch(async (err) => {
     const message = await bot.api.sendMessage(parseInt(OWNER_ID), err.message);
