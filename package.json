@@ -17,6 +17,7 @@
     "@supabase/supabase-js": "^2.43.4",
     "@webbtc/webln-types": "^3.0.0",
     "dotenv": "^16.4.5",
-    "grammy": "^1.23.0"
+    "grammy": "^1.23.0",
+    "typescript": "^5.5.3"
   }
 }
