@@ -1,5 +1,6 @@
 Object.assign(global, { WebSocket: require('ws') });
 import { conversations, createConversation } from "@grammyjs/conversations";
+import express from 'express'
 import {
     handleStart,
     handleHelp,
@@ -12,7 +13,9 @@ import { connection } from './utils/conversation';
 import bot from './config/botConfig'
 import { session } from "grammy";
 import {OWNER_ID, PORT} from "./constants";
-console.log(PORT);
+const app = express();
+app.listen(PORT)
+
 bot.use(session({ initial: () => ({}) }));
 bot.use(conversations());
 bot.use(createConversation(connection));
