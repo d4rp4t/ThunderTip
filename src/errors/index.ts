@@ -110,7 +110,13 @@ async function handleError(error:Error, ctx:Context){
         message = "There is something wrong with database! Try again later pls"
     }
     if(message){
-        await ctx.reply(message)
+        if(ctx.msg){
+            await ctx.reply(message, {
+                reply_parameters: { message_id: ctx.msg.message_id },
+            });
+        } else {
+            await ctx.reply(message);
+        }
     } else{
         await ctx.reply(`Yikes! Something went wrong. Try again later.`);
         await bot.api.sendMessage(parseInt(process.env.OWNER_ID!), error.message);

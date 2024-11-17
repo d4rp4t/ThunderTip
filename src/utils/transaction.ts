@@ -33,7 +33,14 @@ export async function handleTransaction(receiverID: string, senderID: string, am
 
     const invoice = await receiver.createInvoice(tipAmount, `Tip for ${receiver.username} from ${sender.username}`);
     if (invoice !== undefined) {
-        await ctx.reply(`You're tipping user ${receiver.username} with ${amount} sats`);
+        if(ctx.msg){
+            await ctx.reply(`You're tipping user ${receiver.username} with ${amount} sats`, {
+                reply_parameters: { message_id: ctx.msg.message_id },
+            });
+        } else {
+            await ctx.reply(`You're tipping user ${receiver.username} with ${amount} sats`);
+        }
+
         await sender.payInvoice(invoice.paymentRequest);
     }
 }

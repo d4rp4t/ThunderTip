@@ -91,7 +91,14 @@ export async function handleBalance(ctx: CommandContext<MyContext>) {
         (!user.connection)&&(()=>{throw new SenderConnectionError("")})();
         await user.connection.enable();
         const balance = await user.connection.getBalance();
-        await ctx.reply(`Your balance is ${balance.balance} ${balance.currency}. Treat yourself!`);
+        if(ctx.msg){
+            //try to respond on a message - helps when group chats is divided on topics
+            await ctx.reply(`Your balance is ${balance.balance} ${balance.currency}. Treat yourself!`, {
+                reply_parameters: { message_id: ctx.msg.message_id },
+            });
+        } else {
+            await ctx.reply(`Your balance is ${balance.balance} ${balance.currency}. Treat yourself!`);
+        }
         user.connection.close()
     }
     catch (error: any) {
