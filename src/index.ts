@@ -28,7 +28,7 @@ bot.command('balance', handleBalance);
 bot.command('nwc', handleNwcInfo);
 
 bot.catch(async (err) => {
-    const message = await bot.api.sendMessage(parseInt(OWNER_ID), err.message);
+    const message = await bot.api.sendMessage(parseInt(OWNER_ID), err.name + " " + err.message);
 });
 bot.start();
 
