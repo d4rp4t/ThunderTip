@@ -1,0 +1,41 @@
+version: '3.9'
+
+services:
+  thundertip:
+    build: .
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - TELEGRAM_TOKEN=${TELEGRAM_TOKEN}
+
+      - NWC_URL=${NWC_URL}
+      - NWC_SECRET=${NWC_SECRET}
+
+      - DATABASE_URL=postgresql://thundertip:${POSTGRES_PASSWORD}@db:5432/thundertip?schema=public
+
+      - NODE_ENV=production
+      - LOG_LEVEL=info
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./migrations:/app/migrations:ro
+
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: thundertip
+      POSTGRES_USER: thundertip
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U thundertip -d thundertip"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  db_data:
