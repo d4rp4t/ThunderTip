@@ -44,7 +44,7 @@ export async function handleConnection(ctx: CommandContext<MyContext>) {
 	}
 }
 
-export async function handleTip(ctx: CommandContext<MyContext>) {
+export async function handleZap(ctx: CommandContext<MyContext>) {
 	try {
 		const args = ctx.match.split(" ");
 		args.length == 0 &&

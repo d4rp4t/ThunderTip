@@ -7,7 +7,7 @@ import {
 	handleStart,
 	handleHelp,
 	handleConnection,
-	handleTip,
+	handleZap,
 	handleBalance,
 	handleNwcInfo,
 } from "./handlers/commandHandlers";
@@ -21,7 +21,7 @@ bot.use(createConversation(connection));
 bot.command("start", handleStart);
 bot.command("help", handleHelp);
 bot.command("connection", handleConnection);
-bot.command("tip", handleTip);
+bot.command("zap", handleZap);
 bot.command("balance", handleBalance);
 bot.command("nwc", handleNwcInfo);
 
