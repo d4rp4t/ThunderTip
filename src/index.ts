@@ -23,7 +23,7 @@ bot.use(createConversation(connection));
 bot.command('start', handleStart);
 bot.command('help', handleHelp);
 bot.command('connection', handleConnection);
-bot.command('tip', handleTip);
+bot.command('zap', handleTip);
 bot.command('balance', handleBalance);
 bot.command('nwc', handleNwcInfo);
 

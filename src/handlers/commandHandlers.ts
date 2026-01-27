@@ -20,8 +20,8 @@ export async function handleHelp(ctx: CommandContext<MyContext>) {
     await ctx.reply("Hey! I'm your go-to bot for fast bitcoin transactions in Telegram chats.\n\n" +
         "Commands:\n\n" +
         "• Hook up your NWC wallet: /connection\n" +
-        "• Throw a tip to a user: /tip <username> <amount>\n" +
-        "• Tip by replying to a message: /tip <amount>\n" +
+        "• Throw a tip to a user: /zap <username> <amount>\n" +
+        "• Tip by replying to a message: /zap <amount>\n" +
         "• For more info about Nostr wallet connect use /nwc \n\n " +
         "Wanna keep me running? Feel free to send tips for bot maintenance (servers, databases, and all that jazz).");
 }

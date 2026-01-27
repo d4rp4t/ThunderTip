@@ -83,7 +83,7 @@ async function handleError(error:Error, ctx:Context){
         message = "You're trying to send 0 satoshi? That doesn't make any sense!"
     }
     if(error instanceof CommandSyntaxError){
-        message = "Oops, something went wrong! Please use the correct syntax: /tip <username> <amount>. For example: /tip @username 10"
+        message = "Oops, something went wrong! Please use the correct syntax: /zap <username> <amount>. For example: /zap @username 10"
     }
     if(error instanceof ReceiverNotConnectedError){
         message = `Sorry, but receiver hasn't connected to this bot. They can't receive your tip!`;
